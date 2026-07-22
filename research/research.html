@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Career Evidence Tool — дослідження</title>
+<style>
+  :root{
+    --ground:#0e1112; --surface:#161a1b; --surface-2:#1d2223;
+    --ink:#e9edec; --ink-2:#bcc4c3; --muted:#8b9493;
+    --line:#272d2e; --line-strong:#3a4243;
+    --stamp:#e07a72; --ok:#74c096; --warn:#d7a745; --dead:#7f8887;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --s--1:clamp(.78rem,.76rem + .1vw,.84rem);
+    --s-0:clamp(1rem,.97rem + .16vw,1.07rem);
+    --s-1:clamp(1.16rem,1.1rem + .3vw,1.32rem);
+    --s-2:clamp(1.4rem,1.26rem + .64vw,1.8rem);
+    --s-3:clamp(1.9rem,1.55rem + 1.5vw,2.8rem);
+    --measure:68ch;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);
+    font-size:var(--s-0);line-height:1.62;-webkit-font-smoothing:antialiased;}
+  .page{max-width:88rem;margin:0 auto;padding:clamp(1.4rem,1rem + 2.5vw,3.5rem) clamp(1rem,.6rem + 2vw,2.4rem) 6rem;}
+  .eyebrow{font-family:var(--mono);font-size:var(--s--1);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  a{color:var(--stamp);text-underline-offset:.18em;}
+  a:focus-visible{outline:2px solid var(--stamp);outline-offset:3px;}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .35em;border-radius:3px;}
+
+  .masthead{padding-bottom:1.6rem;border-bottom:2px solid var(--ink);display:flex;flex-direction:column;gap:1rem;}
+  .masthead h1{margin:0;font-size:var(--s-3);line-height:1.04;letter-spacing:-.02em;font-weight:600;text-wrap:balance;max-width:24ch;}
+  .masthead p{margin:0;max-width:var(--measure);color:var(--ink-2);font-size:var(--s-1);}
+  .masthead .lede{color:var(--ink);border-left:3px solid var(--stamp);padding-left:.95rem;}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;}
+
+  nav{position:sticky;top:0;z-index:5;margin:0 0 2.6rem;padding:.7rem 0;
+    background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;}
+  nav a{font-family:var(--mono);font-size:var(--s--1);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;}
+  nav a:hover{color:var(--ink);}
+
+  section{margin-top:clamp(2.6rem,2rem + 2.5vw,4.5rem);scroll-margin-top:4rem;}
+  .sechead{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;padding-bottom:.8rem;margin-bottom:1.4rem;border-bottom:1px solid var(--line-strong);}
+  .sechead h2{margin:0;font-family:var(--mono);font-size:var(--s-2);font-weight:600;letter-spacing:.02em;text-transform:uppercase;}
+  .sechead span{font-family:var(--mono);font-size:var(--s--1);color:var(--muted);}
+  h3{font-size:var(--s-1);font-weight:600;line-height:1.3;margin:0 0 .5rem;text-wrap:balance;}
+  p{max-width:var(--measure);color:var(--ink-2);}
+  .col{max-width:var(--measure);}
+  strong{color:var(--ink);font-weight:600;}
+
+  .quote{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--stamp);padding:1.2rem 1.4rem;margin:1.4rem 0;}
+  .quote blockquote{margin:0;font-style:italic;color:var(--ink-2);max-width:var(--measure);}
+  .quote cite{display:block;margin-top:.6rem;font-style:normal;font-family:var(--mono);font-size:var(--s--1);color:var(--muted);}
+
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;margin:1rem 0 1.6rem;background:var(--surface);}
+  table{border-collapse:collapse;width:100%;min-width:54rem;font-size:.9rem;line-height:1.45;}
+  caption{caption-side:top;text-align:left;font-family:var(--mono);font-size:var(--s--1);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.9rem 1rem .4rem;}
+  thead th{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;padding:.75rem .8rem;border-bottom:2px solid var(--line-strong);background:var(--surface-2);vertical-align:bottom;white-space:nowrap;}
+  tbody td{padding:.72rem .8rem;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);}
+  tbody tr:last-child td{border-bottom:0;}
+  td.pn{color:var(--ink);font-weight:600;min-width:9rem;}
+  td.pn a{color:inherit;text-decoration-color:var(--line-strong);}
+  td.pn a:hover{text-decoration-color:var(--stamp);}
+  td.n{text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;width:3.4rem;}
+  .n.lo{color:var(--ok);} .n.mid{color:var(--warn);} .n.hi{color:var(--stamp);} .n.na{color:var(--muted);}
+  tr.tot td{background:var(--surface-2);color:var(--ink);font-weight:600;border-top:2px solid var(--line-strong);}
+
+  .bcell{display:inline-flex;flex-direction:column;align-items:center;gap:.28rem;}
+  .bval{font-family:var(--mono);font-size:1rem;font-variant-numeric:tabular-nums;font-weight:600;color:var(--muted);}
+  .bcell.top .bval{color:var(--ok);} .bcell.low .bval{color:var(--stamp);}
+  .meter{display:flex;gap:2px;}
+  .meter i{width:6px;height:6px;background:var(--line-strong);border-radius:1px;}
+  .meter i.on{background:var(--muted);}
+  .bcell.top .meter i.on{background:var(--ok);} .bcell.low .meter i.on{background:var(--stamp);}
+
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.1rem;margin:1rem 0 0;}
+  .patblock{margin:1.6rem 0 2.4rem;padding-top:1.2rem;border-top:1px solid var(--line);}
+  .patblock:first-of-type{border-top:0;padding-top:0;}
+  .patblock h4{margin:0 0 .35rem;font-size:var(--s-1);font-weight:600;line-height:1.3;display:flex;gap:.6rem;align-items:baseline;text-wrap:balance;}
+  .patblock h4 .pnum{font-family:var(--mono);color:var(--stamp);font-size:var(--s-0);flex:none;}
+  .patblock > p{margin:0;}
+  figure{margin:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface);}
+  figure img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line);cursor:zoom-in;transition:opacity .12s;}
+  figure img:hover{opacity:.85;}
+  .lightbox{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:clamp(1rem,3vw,2.5rem);cursor:zoom-out;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:4px;box-shadow:0 10px 50px rgba(0,0,0,.6);}
+  .lightbox .hint{position:fixed;top:1rem;right:1.2rem;font-family:var(--mono);font-size:var(--s--1);color:rgba(255,255,255,.6);letter-spacing:.06em;}
+  figcaption{padding:.7rem .9rem;font-size:.9rem;color:var(--ink-2);}
+  figcaption b{color:var(--ink);font-family:var(--mono);font-size:var(--s--1);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.2rem;}
+
+  .cards{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .card{background:var(--surface);padding:1.2rem 1.4rem;display:grid;grid-template-columns:2.3rem 1fr;gap:.9rem;}
+  .card .num{font-family:var(--mono);font-size:var(--s--1);color:var(--stamp);padding-top:.35em;font-variant-numeric:tabular-nums;}
+  .card .body{min-width:0;}
+  .card p{margin:.4rem 0 0;}
+  .src{font-family:var(--mono);font-size:.8rem;color:var(--muted);}
+  .src a{color:var(--muted);text-decoration-color:var(--line-strong);}
+
+  .vtag{font-family:var(--mono);font-size:var(--s--1);letter-spacing:.09em;text-transform:uppercase;}
+  .v-best{border-left:4px solid var(--ok);} .v-best .vtag{color:var(--ok);}
+  .v-2{border-left:4px solid var(--warn);} .v-2 .vtag{color:var(--warn);}
+  .v-no{border-left:4px solid var(--stamp);} .v-no .vtag{color:var(--stamp);}
+
+  .hyp{border:1px solid var(--line);border-radius:6px;padding:1rem 1.2rem;margin-bottom:.8rem;background:var(--surface);}
+  .hyp .lbl{font-family:var(--mono);font-size:var(--s--1);color:var(--stamp);letter-spacing:.06em;}
+  .hyp h3{margin:.25rem 0 .4rem;font-size:var(--s-0);}
+  .hyp .from{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-top:.4rem;}
+  .hyp.gap{border-style:dashed;border-color:var(--line-strong);}
+  .hyp.gap .lbl{color:var(--warn);}
+  .badge{font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);padding:.1rem .4rem;border-radius:3px;}
+
+  .warn{border:2px solid var(--stamp);border-radius:6px;padding:1.3rem 1.5rem;margin:1.4rem 0;background:var(--surface);}
+  .warn h3{color:var(--ink);}
+
+  footer{margin-top:4rem;border-top:1px solid var(--line);padding-top:1.4rem;color:var(--muted);font-size:var(--s--1);max-width:var(--measure);display:flex;flex-direction:column;gap:.5rem;}
+
+  @media (max-width:44rem){ .card{grid-template-columns:1fr;gap:.4rem;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Career Evidence Tool · дослідження</span>
+    <h1>Записати легко. Зібрати з цього самооцінку на рев'ю — не дає ніхто.</h1>
+    <p class="lede"><strong>Career Evidence Tool</strong> — система, що збирає робочі досягнення з доказами в момент, коли вони стаються, щоб у сезон рев'ю не відновлювати все по пам'яті. Для дизайнерів, PM і розробників у командах з циклами перформанс-рев'ю.</p>
+    <p>Кинути скріншот чи цитату колеги — не проблема. Ламається наступний крок: коли настає рев'ю, зібрати купу розрізнених скрінів, нотаток і цитат у <strong>готову самооцінку, буллети для CV чи кейс портфоліо</strong>. Через це люди кидають такі продукти <strong>на другому записі</strong>. Зведення кроків 03–06 про те, чому так і що з цим робити.</p>
+    <div class="meta">
+      <span class="eyebrow">21–22 липня 2026</span>
+      <span class="eyebrow">59 продуктів · 5 пройдено зсередини</span>
+      <span class="eyebrow">145 скріншотів</span>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#competitors">01 · Конкуренти</a>
+    <a href="#benchmark">02 · Бенчмарк</a>
+    <a href="#patterns">03 · Патерни</a>
+    <a href="#findings">04 · Висновки</a>
+  </nav>
+
+  <!-- ============ КОНКУРЕНТИ ============ -->
+  <section id="competitors">
+    <div class="sechead"><h2>01 · Конкуренти</h2><span>59 перевірено · 15 у матриці · 3 групи</span></div>
+
+    <p class="col">Прямих конкурентів близько восьми, і в жодного немає користувачів. Найпомітніший має 22 голоси на Product Hunt. Зрив стається не на реєстрації, а <strong>на другому записі</strong>.</p>
+
+    <div class="quote">
+      <blockquote>«We're winding down Bragdocs, after nearly 5 years… Stats: 1400 people who created at least one post, created a total of 9100 posts. We had a bit of a spam signup problem which led to a further 10,000+ extra users.»</blockquote>
+      <cite>Jonny Burch, співзасновник Progression · <a href="https://www.bragdocs.com/@jonny">bragdocs.com/@jonny</a>, 25.11.2024</cite>
+    </div>
+    <p class="col">Троє найактивніших дали 914 записів із 9 100. Решта 1 397 людей поділили те, що лишилось.</p>
+
+    <div class="tblwrap">
+      <table>
+        <caption>ХАРД — той самий продукт для тієї самої людини · Вхід / Запис = тертя, 1 дешево → 9 неможливо</caption>
+        <thead><tr><th>Продукт</th><th>Аудиторія / хто платить</th><th>Основа</th><th>Ключовий механізм</th><th>Вхід</th><th>Запис</th><th>Вихід</th></tr></thead>
+        <tbody>
+          <tr><td class="pn"><a href="https://bragduck.com/">Bragduck</a></td><td>інженери, PM, дизайнери; платить сам</td><td>хмарне сховище, прив'язане до цілей</td><td>автозбір GitHub/Jira через CLI+MCP, AI-звіт</td><td class="n mid">5</td><td class="n mid">4</td><td>AI-звіт PDF/буфер; повний експорт платний</td></tr>
+          <tr><td class="pn"><a href="https://bragbook.io/">BragBook</a></td><td>дизайнери, розробники, PM; платить сам</td><td>хмарна стрічка з колекціями</td><td>кнопка AI Enhance переписує сирий текст</td><td class="n mid">4</td><td class="n mid">4</td><td>текст/PDF/CSV; публічний профіль</td></tr>
+          <tr><td class="pn"><a href="https://github.com/edspencer/bragdoc-ai">bragdoc.ai</a></td><td>розробники з git; безкоштовний</td><td>хмарна база текстів, доказів у схемі нема</td><td>CLI читає коміти, LLM пише досягнення</td><td class="n mid">5</td><td class="n mid">4</td><td>Markdown-документ рев'ю</td></tr>
+          <tr><td class="pn">ImpactLogr</td><td>фахівці перед рев'ю, ~110 наборів під роль; платить сам</td><td>таблиця «дія-контекст-результат»</td><td>коуч у браузері ловить слабкі формулювання</td><td class="n hi">6</td><td class="n hi">7</td><td>AI-кейс від 5 записів; експорт лише друк PDF</td></tr>
+          <tr><td class="pn"><a href="https://careerlog.io/">CareerLog</a></td><td>фахівці, орієнтовані на кар'єру; платить сам</td><td>local-first: work log + журнал + цілі</td><td>Quick Log з гарячою клавішею; звіти й стендапи</td><td class="n lo">3</td><td class="n mid">4</td><td>звіти, стендапи; дані лише в браузері</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tblwrap">
+      <table>
+        <caption>СОФТ — інший продукт, та сама задача</caption>
+        <thead><tr><th>Продукт</th><th>Аудиторія / хто платить</th><th>Основа</th><th>Ключовий механізм</th><th>Вхід</th><th>Запис</th><th>Вихід</th></tr></thead>
+        <tbody>
+          <tr><td class="pn"><a href="https://github.com/bostonaholic/reflect">Збірники з Git</a></td><td>розробники з GitHub; безкоштовно</td><td>не сховище — одноразовий читач</td><td>реконструкція заднім числом однією командою</td><td class="n hi">8</td><td class="n na">—</td><td>markdown-файли, перезаписуються</td></tr>
+          <tr><td class="pn"><a href="https://geekbot.com/">Geekbot</a></td><td>команди Slack/Teams; платить роботодавець</td><td>планувальник опитувань за розкладом</td><td>бот питає в Slack, де людина вже сидить</td><td class="n lo">1</td><td class="n lo">3</td><td>пост у канал; архів компанії</td></tr>
+          <tr><td class="pn"><a href="https://www.elabftw.net/">eLabFTW</a></td><td>науковці; платить установа</td><td>сховище датованих записів із вкладеннями</td><td>запис блокується й засвідчується таймстемпом</td><td class="n hi">9</td><td class="n lo">1</td><td>PDF/A, ZIP, JSON; дані свої</td></tr>
+          <tr><td class="pn"><a href="https://pebblepad.com/">PebblePad</a></td><td>студенти й викладачі; платить заклад</td><td>сховище + конструктор шаблонів</td><td>заклад видає шаблон, викладач перевіряє</td><td class="n hi">9</td><td class="n hi">7</td><td>оцінка викладача; PDF поштучно</td></tr>
+          <tr><td class="pn"><a href="https://www.interfolio.com/products/dossier/">Interfolio Dossier</a></td><td>академіки; платить сам</td><td>сховище кар'єрних файлів + розсилання</td><td>вічне зберігання конфіденційних листів</td><td class="n mid">4</td><td class="n hi">6</td><td>доставка пакета адресату; ZIP</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tblwrap">
+      <table>
+        <caption>АСПІРАЦІЙНІ — еталони швидкого запису й виходу</caption>
+        <thead><tr><th>Продукт</th><th>Аудиторія / хто платить</th><th>Основа</th><th>Ключовий механізм</th><th>Вхід</th><th>Запис</th><th>Вихід</th></tr></thead>
+        <tbody>
+          <tr><td class="pn"><a href="https://orgmode.org/manual/Capture.html">Emacs org-capture</a></td><td>користувачі Emacs; платять часом</td><td>швидка адресна вставка в локальний файл</td><td>шаблон сам підтягує посилання й виділене</td><td class="n hi">8</td><td class="n lo">1</td><td>текстовий файл; експорт у будь-що</td></tr>
+          <tr><td class="pn"><a href="https://www.zotero.org/">Zotero</a></td><td>науковці; платять лише за синк</td><td>локальна база структурованих записів</td><td>один клік у браузері заповнює запис сам</td><td class="n lo">3</td><td class="n lo">1</td><td>посилання в 9000+ форматів</td></tr>
+          <tr><td class="pn"><a href="https://www.timely.com/">Timely</a></td><td>агенції; платить роботодавець</td><td>пасивний журнал активності</td><td>фоновий запис вікон, потім AI-чернетка</td><td class="n hi">9</td><td class="n lo">2</td><td>табель; CSV/XLS/PDF</td></tr>
+          <tr><td class="pn"><a href="https://www.expensify.com/">Expensify</a></td><td>працівники; платить компанія</td><td>сховище витрат, запис не існує без чека</td><td>SmartScan витягує суму/дату з фото</td><td class="n lo">3</td><td class="n lo">2</td><td>гроші на рахунок; CSV</td></tr>
+          <tr><td class="pn"><a href="https://www.fourteenfish.com/">FourteenFish</a></td><td>британські лікарі; платить сам (£50/рік)</td><td>сховище датованих записів із файлами</td><td>чернетка в приватні нотатки, потім розбір</td><td class="n mid">5</td><td class="n lo">2</td><td>річний PDF; вивантаження пачкою</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">BragBook, bragdoc.ai, ImpactLogr пройдено власним акаунтом; CareerLog і eLabFTW — через демо. Bragduck лишається в матриці завдяки даним із відкритого коду сайту (екрани зняти не вдалося — перевірка на бота). Тертя Timely — реконструкція з документації. За межами п'ятірки — один живий HARD-гравець, у який зайти не вдалося: <a href="https://www.thecareerjournal.com/">Career Journal</a> (формат STAR); реєстрація зависає, з лендінга даних замало.</p>
+
+    <h3 style="margin-top:2.2rem">Три спільні патерни ринку</h3>
+    <p class="col">Кожен патерн — не з одного продукту, а той самий вибір, повторений по всій ніші. Тому нижче по кілька скрінів із різних конкурентів.</p>
+
+    <div class="patblock">
+      <h4><span class="pnum">01</span>Доказ ніде не є окремим типом даних — скрізь це просто текст</h4>
+      <p class="col">У формах немає полів під число до/після чи цитату з автором. Усе, що є, — текст і мітки. Уся ніша зберігає переказ роботи, а не саму роботу.</p>
+      <div class="figs">
+        <figure>
+          <img src="screens/hard/bragdoc-in-06-add-form.png" alt="Форма додавання bragdoc.ai: одне текстове поле, проєкт, повзунок впливу">
+          <figcaption><b>bragdoc.ai</b>Одне текстове поле, проєкт і повзунок впливу. Жодного поля для доказу.</figcaption>
+        </figure>
+        <figure>
+          <img src="screens/hard/bragbook-in-02-add-form.png" alt="Форма BragBook: Title, Content, Tags, Links, Attach Images">
+          <figcaption><b>BragBook</b>«Links» — таке саме поле-мітка, як теги. Ні числа, ні цитати як окремих типів.</figcaption>
+        </figure>
+        <figure>
+          <img src="screens/hard/careerlog-demo-01.png" alt="Quick Log у CareerLog: Project, What did you work on, чіпи зусиль">
+          <figcaption><b>CareerLog</b>Quick Log: проєкт, текст, зусилля. Метрика «41%→55%» пізніше лягає прозою в журнал.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="patblock">
+      <h4><span class="pnum">02</span>Усі ставлять на переписування тексту машиною — і ні в кого немає людей</h4>
+      <p class="col">Центральна фіча скрізь — не сховище доказу, а AI, що робить формулювання «кращими». Це працює проти доказовості. А чисел: 22 голоси, 2 голоси, 25 зірок.</p>
+      <div class="figs">
+        <figure>
+          <img src="screens/hard/bragbook-in-05-after-ai.png" alt="BragBook AI Enhance переписав короткий текст, додавши подробиці">
+          <figcaption><b>BragBook · AI Enhance</b>«Помогал с редизайном» → «Supported team… through collaborative feedback and meetings». З'явилось те, чого не писали.</figcaption>
+        </figure>
+        <figure>
+          <img src="screens/hard/bragdoc-in-02-demo-dashboard.png" alt="Дашборд bragdoc.ai: 221 досягнення, згенерованих із комітів">
+          <figcaption><b>bragdoc.ai</b>221 запис, усі згенеровані з git-комітів: «Fixed Type Errors… Resolved type errors to improve reliability». Історія репозиторію, не кар'єри.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="patblock">
+      <h4><span class="pnum">03</span>Дешева форма й розділення «чернетка / чистовик» — вже норма, не перевага</h4>
+      <p class="col">Мінімальний ввід і окрема чернетка є в усіх. Тобто наша пара інбокс + розбір — вхідний квиток, а не відмінність.</p>
+      <div class="figs">
+        <figure>
+          <img src="screens/soft/elabftw-02-list-hero.png" alt="Список eLabFTW із записом Untitled">
+          <figcaption><b>eLabFTW</b>У списку є запис «Untitled» — зберегти без заголовка можна, обов'язкових полів нуль.</figcaption>
+        </figure>
+        <figure>
+          <img src="screens/hard/impactlogr-in-23-home-with-draft.png" alt="ImpactLogr показує незавершену чернетку з кнопкою Resume">
+          <figcaption><b>ImpactLogr</b>«You have an unfinished draft → Resume». Чернетка як окремий стан, відділений від чистовика.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem">Три ключові відмінності</h3>
+    <div class="cards">
+      <div class="card"><span class="num">01</span><div class="body"><h3>Хто пише запис</h3><p>Людина в момент події чи машина заднім числом. Полюси — збірники з Git проти ImpactLogr. Посередині Zotero й Expensify: людина приносить доказ, машина заповнює нудне.</p></div></div>
+      <div class="card"><span class="num">02</span><div class="body"><h3>Чий архів, коли людина йде</h3><p>Geekbot — архів компанії. PebblePad попереджає вивантажити до втрати логіна. Проти цього org-capture (файл, 20 років) і Zotero (тека лишиться).</p></div></div>
+      <div class="card"><span class="num">03</span><div class="body"><h3>Що на виході і як скоро</h3><p>Expensify — гроші одразу. FourteenFish — документ раз на рік під примус закону. Кар'єрні продукти — найгірша позиція: віддача накопичувальна, а до неї не тримає нічого.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ============ БЕНЧМАРК ============ -->
+  <section id="benchmark">
+    <div class="sechead"><h2>02 · Бенчмарк</h2><span>5 еталонів збірки · 8 критеріїв</span></div>
+    <p class="col">Взято вимір, на якому провалюється весь ринок — збірка накопичених уламків у придатний вихід — і знайдено тих, хто його вирішив, з різних категорій.</p>
+    <p class="col"><strong>Точна межа порожнечі:</strong> дехто вже збирає <strong>активність</strong> (CareerLog генерує стендапи й звіти з логу). Ніхто не збирає <strong>докази</strong> — метрику до/після, цитату з автором, скріншот — у перевірюваний вихід для рев'ю.</p>
+
+    <div class="tblwrap">
+      <table>
+        <caption>Оцінка збірки уламків у вихід · 1–5, зелений — сильне місце, червоний — слабке</caption>
+        <thead><tr><th>Критерій</th><th>Zotero</th><th>Readwise</th><th>Photos</th><th>Granola</th><th>Strava</th></tr></thead>
+        <tbody>
+          <tr><td>1. Віддача без зусиль</td>
+            <td><span class="bcell low"><span class="bval">2</span><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td></tr>
+          <tr><td>2. Поріг до першого результату</td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">3</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td></tr>
+          <tr><td>3. Групування</td>
+            <td><span class="bcell low"><span class="bval">2</span><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></span></td>
+            <td><span class="bcell"><span class="bval">3</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td></tr>
+          <tr><td>4. Зв'язок із джерелом</td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td></tr>
+          <tr><td>5. Не вигадує</td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell low"><span class="bval">3</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span></td>
+            <td><span class="bcell low"><span class="bval">3</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td></tr>
+          <tr><td>6. Змінність виходу</td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td></tr>
+          <tr><td>7. Повернення до забутого</td>
+            <td><span class="bcell low"><span class="bval">2</span><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td></tr>
+          <tr><td>8. Придатність до винесення</td>
+            <td><span class="bcell top"><span class="bval">5</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td>
+            <td><span class="bcell low"><span class="bval">3</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span></td>
+            <td><span class="bcell low"><span class="bval">2</span><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></span></td>
+            <td><span class="bcell"><span class="bval">4</span><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></span></td></tr>
+          <tr class="tot"><td>Разом із 40</td><td class="n">31</td><td class="n">36</td><td class="n">33</td><td class="n">32</td><td class="n">36</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Дві оцінки знижені вручну для зіставності: Readwise за винесенням 5→4 (дані в хмарі), Granola за «не вигадує» 4→3 (аудіо не зберігається).</p>
+
+    <h3 style="margin-top:2rem">Топ-3 механізми для MVP</h3>
+    <div class="cards">
+      <div class="card"><span class="num">01</span><div class="body"><h3>Доказ зберігається як дані, а не текст</h3><p>Окремі поля залежно від типу: число <code>було/стало/одиниця</code>, цитата <code>текст/автор/джерело</code>. Можна відфільтрувати найсильніше й підставити в самооцінку чи буллет саме доказ.</p><p class="src">Джерело: <a href="https://www.zotero.org/support/kb/item_types_and_fields">типи полів Zotero</a> · чек-як-доказ Expensify · потреба — патерн ринку №1</p></div></div>
+      <div class="card"><span class="num">02</span><div class="body"><h3>Розбір показує кілька карток, а не список</h3><p>Половина сирі, половина давно не чіпані; після показу ймовірність повтору різко падає — за місяць проходить увесь інбокс без набридання. Мета не «запам'ятати», а «дорозібрати».</p><p class="src">Джерело: <a href="https://docs.readwise.io/readwise/docs/faqs/reviewing-highlights">денне рев'ю Readwise</a> · <a href="https://blog.readwise.io/hack-your-brain-with-spaced-repetition-and-active-recall/">алгоритм спаду</a></p></div></div>
+      <div class="card"><span class="num">03</span><div class="body"><h3>Стіна між даними й шаблоном виходу</h3><p>У базі факти, окремо шаблони; порожній блок зникає — запис без метрики дає коротший результат, а не діру чи вигадку. Без AI, як злиття пошти.</p><p class="src">Джерело: <a href="https://docs.citationstyles.org/en/stable/specification.html">специфікація CSL</a> · <a href="https://www.zotero.org/support/dev/citation_styles/preview_pane">Style Preview</a></p></div></div>
+    </div>
+    <p class="col" style="margin-top:1rem">Механізми поєднані в конвеєр: №2 повертає забутий запис → №1 дає що дописати → №3 дає вихід.</p>
+
+    <div class="warn">
+      <span class="vtag" style="color:var(--stamp)">Один механізм, що не спрацює</span>
+      <h3>Автоматична добірка, яку система сама виносить на екран</h3>
+      <p>У Photos болючий кадр — виняток. У нас провалений реліз, конфлікт, зрізаний скоуп — нормальний вміст. Якщо система винесе «ось твій квартал» і туди потрапить зрізаний проєкт, людина перестане записувати важке.</p>
+      <p>Доказ шкоди: <a href="https://www.buzzfeednews.com/article/karolinawaclawiak/life-events-google-memories-facebook-grief">«телефон не розуміє, що моя мати померла… показав ці фото в річному підсумку під заспокійливу музику»</a>. Побічно підтверджує рішення проти гейміфікації: <a href="https://journals.sagepub.com/doi/10.1177/15588661221148170">«If it's not on Strava it didn't happen»</a> — Strava пробувала полагодити серії тричі й не змогла.</p>
+    </div>
+  </section>
+
+  <!-- ============ ПАТЕРНИ ============ -->
+  <section id="patterns">
+    <div class="sechead"><h2>03 · Патерни</h2><span>5 патернів захоплення · 1 обраний</span></div>
+    <p class="col">П'ять принципово різних патернів за трьома осями: хто ініціює, що є одиницею вводу, звідки структура. Розкладка — інбокс: артефакт + рядок; розбір: форма.</p>
+
+    <div class="cards">
+      <div class="card v-best"><span class="num">✓</span><div class="body"><span class="vtag">Обрано</span><h3>Захоплення артефакту</h3><p>Людина приносить об'єкт (скрін, файл, посилання), і об'єкт сам стає записом. Три причини: <strong>єдиний патерн, де доказ і є запис</strong> (§7); дає безкоштовно контекст, яким склеюємо (§5–6); тільки тут можливий нуль обов'язкових полів (§6).</p><p class="src">Еталон: <a href="https://www.zotero.org/">розширення Zotero</a> · <a href="https://www.expensify.com/">SmartScan Expensify</a></p></div></div>
+      <div class="card v-2"><span class="num">≈</span><div class="body"><span class="vtag">Другий, за умови «артефакта нема»</span><h3>Рядок із розбором</h3><p>Наставництво, зрізаний скоуп, рішення на зустрічі — хапати нема чого. Тоді рядок, але тільки дата й тег, і розібране показане одразу. Дрібна ідея: структурні поля краще вводити <strong>чіпами</strong> (тап «2г»), а не парсингом тексту. Еталони — Todoist, Things; окремих посилань не звірено, <span class="badge">дані не підтверджені</span>.</p></div></div>
+      <div class="card v-no"><span class="num">✕</span><div class="body"><span class="vtag">Відхилено</span><h3>Пасивне спостереження</h3><p>Три причини, кожна фатальна: аудиторія (дизайнери, PM — §3) не лишає машинних слідів; фіксує активність, а не вплив (§2); суперечить локальності (§5) — перетворює архів на стеження за собою.</p></div></div>
+    </div>
+    <p class="src">§ — розділи <a href="CLAUDE.md">CLAUDE.md</a>. Таксономія патернів аналітична; приклади продуктів мають джерела.</p>
+  </section>
+
+  <!-- ============ ВИСНОВКИ ============ -->
+  <section id="findings">
+    <div class="sechead"><h2>04 · Висновки</h2><span>5 гіпотез · 5 прогалин</span></div>
+    <p class="col">Усе нижче — <strong>гіпотези фази дизайну, не доведені факти</strong>. Кожна названа з розділом, з якого випливає.</p>
+
+    <div class="hyp"><span class="lbl">Г1</span><h3>Захоплення: артефакт + рядок в інбоксі, форма в розборі</h3><p>Одиниця запису — гібрид: чернетка падає сама, у розборі піднімається в досягнення або чіпляється до наявного. В інбоксі нуль обов'язкових полів.</p><p class="from">← Патерни</p></div>
+    <div class="hyp"><span class="lbl">Г2</span><h3>Доказ як типізовані дані, а не текст</h3><p>Чотири типи (скрін, цитата з автором, число до/після, посилання) — окремі поля, що з'являються при збагаченні й не блокують збереження порожніми.</p><p class="from">← Бенчмарк (мех. 1) + Конкуренти (патерн №1)</p></div>
+    <div class="hyp"><span class="lbl">Г3</span><h3>Склеювання — тегом і датою, вгадування лише бонус</h3><p>Проєкт/фіча/тема = тег (пре-заповнюється з контексту). Спрінт/квартал = фільтр за датою. Збіг слів → обережне питання, ніколи не автосклеювання.</p><p class="from">← Бенчмарк (мех. 2)</p></div>
+    <div class="hyp"><span class="lbl">Г4</span><h3>Проміжна віддача з другого-третього запису</h3><p>Зріз «що ти зробив цього місяця» автоматично, без генерації тексту — щоб повернення настало до того, як звичка зламається.</p><p class="from">← Конкуренти (зрив на другому записі) + Бенчмарк (Readwise)</p></div>
+    <div class="hyp"><span class="lbl">Г5</span><h3>Ніякої гейміфікації</h3><p>Ні серій, ні оцінок тижня. Максимум — фактичний рядок без осуду.</p><p class="from">← Бенчмарк (мех.-що-не-спрацює + дослідження Strava)</p></div>
+
+    <h3 style="margin:2rem 0 1rem">Прогалини, де даних немає</h3>
+    <div class="hyp gap"><span class="lbl">П1</span> <span class="badge">дані не підтверджені</span><h3>Чи існує біль насправді</h3><p>Нуль живих скарг користувачів, лише статті про користь. Перевірити на людях: чи готова людина витрачати зусилля весь рік заради виходу, який і так зліпить за вечір.</p><p class="from">← Конкуренти</p></div>
+    <div class="hyp gap"><span class="lbl">П2</span> <span class="badge">частково</span><h3>Пост-мортем Get Work Recognized</h3><p>Засновник визнав відсутність PMF на Hacker News у грудні 2021; конкретне посилання на тред не звірялося до рівня цитати.</p><p class="from">← Конкуренти</p></div>
+    <div class="hyp gap"><span class="lbl">П3</span> <span class="badge">дані не підтверджені</span><h3>Chrome Web Store і Figma Community</h3><p>Обидві заявлені «порожнечі» стоять на невдалих спробах доступу агентів, а не на доказах відсутності. Треба перевірити руками.</p><p class="from">← Конкуренти</p></div>
+    <div class="hyp gap"><span class="lbl">П4</span> <span class="badge">не пройдено</span><h3>Два живі HARD-гравці зсередини</h3><p>Career Journal і Bragduck зсередини не пройдено (реєстрація зависає / перевірка на бота). Bragduck лишили в матриці завдяки коду; Career Journal — за виноскою. Заявлені 2 500 користувачів Career Journal — не підтверджені.</p><p class="from">← Конкуренти</p></div>
+    <div class="hyp gap"><span class="lbl">П5</span> <span class="badge">відкрите — не вирішувати</span><h3>Гейміфікація</h3><p>Один із живих HARD-конкурентів (CareerLog) робить local-first і серію днів разом — контрприклад до Г5. Рішення поки не переглядаємо; повернутись, коли зрозуміємо, чи серія тримає людей.</p><p class="from">← Бенчмарк (Г5) + Конкуренти</p></div>
+  </section>
+
+  <footer>
+    <p>Метод: кроки 03–04 — 9 напрямків розвідки, перевірка кожного кандидата, вісім скептиків проти навантажених фактів. Крок 05 — п'ять паралельних агентів за вісьмома критеріями, 162 звернення до джерел. Крок 06 — таксономія патернів захоплення.</p>
+    <p>Повний текст із джерелами — <a href="research.md">research.md</a>. Бриф — <a href="CLAUDE.md">CLAUDE.md</a>. Дані актуальні на 22 липня 2026.</p>
+  </footer>
+
+</div>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Збільшений скріншот">
+  <span class="hint">клік або Esc — закрити</span>
+  <img alt="Збільшений скріншот">
+</div>
+
+<script>
+(function(){
+  var lb=document.getElementById('lb'), lbimg=lb.querySelector('img');
+  function close(){ lb.classList.remove('open'); lbimg.removeAttribute('src'); }
+  document.querySelectorAll('figure img').forEach(function(im){
+    im.addEventListener('click',function(){ lbimg.src=im.currentSrc||im.src; lb.classList.add('open'); });
+  });
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&lb.classList.contains('open')) close(); });
+})();
+</script>
+</body>
+</html>
